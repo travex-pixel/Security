@@ -36,7 +36,7 @@ What does exist is:
 - Accessibility: public repository and shipped to every browser visiting the game's domain. Current and historical.
 - Validity: public-by-design. PostHog project keys are intended for client code. No PostHog personal API key (`phx_`) exists anywhere, including commit messages and ref names.
 - Consequence: anyone can inject events into the analytics project or burn free-tier quota. Cannot read data or administer the project.
-- Severity: **LOW**. Confidence: High.
+- Severity: **INFORMATIONAL** (public by design; the credential partner rated it LOW, the auditor INFORMATIONAL; signed off as INFORMATIONAL). Confidence: High.
 - Action: none required for secrecy. Optionally restrict authorised domains in PostHog. The same file's Supabase slot (`window.HML_BOARD`) is empty in all 23 production versions.
 
 ### CR-02 — Deploy workflow uses a long-lived Google Cloud service-account JSON key and runs on push to any branch

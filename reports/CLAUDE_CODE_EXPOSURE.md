@@ -42,8 +42,8 @@ No `.mcp.json`, hooks, commands or settings files anywhere.
 ### CC-02 — No repository ignores `.claude/settings.local.json` (latent control gap)
 - Location: every `.gitignore` at HEAD and every historical version (35 versions across 19 repositories). Only `.claude/skills/impeccable/scripts/bin/` is ignored (NewApp, Reputation-Operations). 13 repositories have no `.gitignore` at all; 7 do not ignore `.env`; 10 do not ignore `.vercel`.
 - Consequence: a single `git add -A` on a machine where Claude Code has written `settings.local.json`, or where `vercel link` has written `.vercel/project.json`, commits it. Claude Code does not add this file to `.gitignore` by default. The absence of a leak so far reflects the fact that nearly all work was done in ephemeral cloud containers, not a control.
-- Severity: MEDIUM (latent, no exposure yet). Confidence: High.
-- Action: add the ignore block in section 7 to every repository and to the global git ignore file.
+- Severity: LOW (latent hygiene gap, no exposure; reduced from MEDIUM at auditor sign-off because nearly all work ran in ephemeral containers). Confidence: High.
+- Action: add the ignore block in section 8 to every repository and to the global git ignore file.
 
 ### CC-03 — Committed documentation and one vendored skill instruct running secrets inline on the command line
 Values in git are placeholders; the risk is the command shape, which "don't ask again" persists verbatim with the real value substituted, and which also lands in shell history and session transcripts.
@@ -66,7 +66,7 @@ Values in git are placeholders; the risk is the command shape, which "don't ask 
 - Evidence: commit forensics across all repositories. About 1,850 commits carry the Claude cloud committer at UTC; 53 commits by `travex-pixel` at UTC carry Claude session trailers (cloud); 42 GitHub web-UI commits are at Sydney time. Exactly four commits (TV: 6f4a099, 5f3662c, d859824, 6a4c2eb, 2026-10-23, Sydney time, no trailers, unsigned) commit ADB dumps that can only be produced from a machine on the TV's home network. TV's `tools/relay.md` says "Claude Code on macOS is the usual case" and its `.gitignore` excludes `adbkey*` and `*.keystore`, confirming local private keys existed in that working tree.
 - Implication: for TV, a local clone very likely has `.claude/settings.local.json`, `~/.claude/projects/<TV-path>/*.jsonl` transcripts (containing the full device dumps: identifiers, Wi-Fi owner, LAN addresses) and possibly `~/.claude.json` project entries. The TV docs instruct commands with the TV's LAN address inline (`TV_HOST=192.168.x.x …`, `relay.py 192.168.x.x`, Tailscale routes), so a local allow-list would hold home network topology, not credentials. The real local sensitivities are the gitignored ADB private key and the transcripts.
 - Absence of local commits elsewhere does not prove absence of local use. Several deployments (Coverwise, intelligence, Jezza on Fly, hello-deployed) have set-up steps not visible in commits, so un-committed local sessions are plausible.
-- Severity: MEDIUM (local, unverifiable). Confidence: High that TV was local; Medium for any other repository.
+- Severity: INFORMATIONAL (an inference and a self-check instruction, not an observed exposure; reduced from MEDIUM at auditor sign-off). Confidence: High that TV was local; Medium for any other repository.
 
 ### CC-05 — Credentials that the committed material shows were handled in sessions (precautionary rotation list)
 Whether Claude Code web transcripts retain pasted values server-side, and for how long, cannot be verified here. The owner should recall what was pasted into prompts or typed into agent-run shell commands and rotate those specific credentials as a precaution.
@@ -82,6 +82,10 @@ Whether Claude Code web transcripts retain pasted values server-side, and for ho
 | `ELEVENLABS_API_KEY`, `GOOGLE_MAPS_API_KEY`, `KV_REST_API_TOKEN`, `CRON_SECRET`, `WORKSPACE_PASSCODE`, `AUDIT_WEBHOOK_URL`, `EODHD_API_TOKEN`, `HELLO_SESSION_SECRET`, Gmail SMTP app password | docs and `.env.example` files as listed in `CREDENTIAL_EXPOSURE_REPORT.md` | 7 |
 
 Severity: POTENTIAL EXPOSURE — REQUIRES VERIFICATION. Confidence: n/a (not observable).
+
+### CC-06 — Claude session identifiers in public commit trailers
+- About 931 commits across the public repositories carry a `Claude-Session:` trailer linking to a claude.ai session URL (34 distinct sessions). These are identifiers, not secrets; only the account owner can open them. They do map public commits to private transcripts, which is worth knowing when deciding transcript retention.
+- Severity: INFORMATIONAL. Confidence: High.
 
 ## 5. Why the cloud-session workflow mattered here
 

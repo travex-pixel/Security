@@ -11,11 +11,11 @@ What is exposed is secondary and third-party information, all in public reposito
 
 | ID | What | Where | Severity | Confidence |
 |---|---|---|---|---|
-| PI-01 | Researched dossier on 50 real small businesses with critical commentary, sales scripts, and a handful of named owners | Reputation-Operations (public) | MEDIUM reputational / LOW personal-data | High |
-| PI-02 | Owner's home TV hardware identifiers (serial, android_id, Bluetooth MAC and name), home network layout, installed apps, locale and timezone | TV (public) | LOW | High |
-| PI-03 | Real social-event details and friends' nicknames in a party game | Jezza-Secret-Mission (public) | LOW | High |
+| PI-01 | Researched dossier on 50 real small businesses with critical commentary, sales scripts, and about seven named owners | Reputation-Operations (public) | MEDIUM (auditor view: MEDIUM to HIGH on commercial grounds) | High |
+| PI-02 | Owner's home TV hardware identifiers (serial, android_id, Bluetooth MAC and name), home network layout, installed apps, locale and timezone | TV (public) | MEDIUM (raised from LOW at auditor sign-off) | High |
+| PI-03 | Real social-event details and friends' nicknames in a party game; one live screenshot publishes a real party code | Jezza-Secret-Mission (public) | LOW | High |
 | PI-04 | Owner's Instagram Insights screenshots and reel analytics, with phone model in EXIF | The-Hidden-World (public, side branch only) | LOW | High |
-| PI-05 | Real executives of a real advisory firm presented as the team behind a product, with headshots, including one person not on the firm's public page | intelligence (private repo; public Vercel URL) | LOW (MEDIUM if the deployment is live and unprotected) | Medium |
+| PI-05 | Real executives of a real advisory firm presented as the team behind a product, with headshots, including one person not on the firm's public page | intelligence (private repo; public Vercel URL) | MEDIUM (uncertain accessibility; LOW if the deployment is protected or down) | Medium |
 | PI-06 | Two real small businesses' public contact details and two tradespeople's first names in site mock-ups | BNA-HVAC, CB-Accounting (public) | INFORMATIONAL | High |
 | PI-07 | A real employer or client company named in a product brief | Signal (public) | LOW | Medium |
 | PI-08 | True-crime scripts about real cases naming real people from public records | The-Hidden-World (public) | INFORMATIONAL | High |
@@ -40,7 +40,7 @@ None of this is a direct identity leak, but together it narrows the owner's iden
 - Accessibility: public repository, current and historical. The in-app passcode gate does not stop the seed JSON being served as a static chunk if the site is deployed (deployment not verified).
 - Validity: genuine desk research about real businesses, by the repository's own notes.
 - Consequence: a downloadable, ranked, critical dossier on 50 identifiable small businesses with sales scripts, published under the owner's account next to a document promising a "compliant cold-contact approach". Personal-data content is limited (business contact details and a few owner names from published sources), so the Privacy Act exposure is modest; the reputational and commercial exposure for the owner if a listed business finds it is the larger risk. This is not legal advice.
-- Severity: MEDIUM (reputational/commercial), LOW (personal data). Confidence: High.
+- Severity: MEDIUM (reputational/commercial), LOW (personal data). The independent auditor would rate the combined exposure MEDIUM to HIGH because the commentary is critical by design in roughly 20 rows, the seed is in the public client bundle, and the owner intends to sell to these businesses. Confidence: High.
 - Action: make the repository private or move `research/`, `business/call-brief-*` and the seed JSON out of the public repository and purge history; strip named individuals from retained research; if the site is live, confirm the workspace bundle is not served to anonymous visitors.
 
 ### PI-02 — Owner's TV device dumps
@@ -49,12 +49,12 @@ None of this is a direct identity leak, but together it narrows the owner's iden
 - Not present (verified): Wi-Fi network name or password, Google account email or tokens, ADB private key, public IP address. The base64 `anomaly_config` value is standard Google services configuration, not a secret.
 - Accessibility: public, current. Validity: genuine (the owner's own device per the docs).
 - Consequence: persistent device fingerprinting, household profiling (subscriptions, viewing apps), a ready reconnaissance package for anyone who reaches the home network (an unpatched TV with ADB over TCP enabled), and serial-number material usable in warranty or support social engineering. Not remotely exploitable from the repository alone.
-- Severity: LOW. Confidence: High.
+- Severity: MEDIUM (raised from LOW at sign-off: confirmed, public, current, persistent hardware identifiers of a device in the owner's home, requiring history rewrite to remove). Confidence: High.
 - Action: remove `backup/` and `discovery/` from the public repository (or make the repository private) and rewrite history for the serial, `android_id` and MAC; disable ADB over network on the TV when not in use. Note the upstream `cleanyourtv` project author named in its licence is a third party, not the owner.
 
 ### PI-03 — Real social event and friends' nicknames in a party game
 - Repository: Jezza-Secret-Mission (public), at HEAD. Files: `README.md`, `docs/CHALLENGES-MESSENGER.txt`, `docs/MISSIONS.md`, `shared/missions.ts`, `shared/themes.ts`, test fixtures and simulations with arrays of nicknames, one commit body naming a scorer, one commit body describing a real birthday-party anecdote. A GitHub Pages demo is published.
-- Content: the honouree's nickname, his university, the wine region of the weekend and its date, 16 "lore" challenges referencing his school, work, old nicknames, first car and middle name (as prompts, not answers), and a dozen friends' nicknames. No surnames, no venue name or address, no real photos (live screenshots show only test nicknames and a placeholder image), no state or photo files ever committed. The server stores photos on a hosting volume, never in git.
+- Content: the honouree's nickname, his university, the wine region of the weekend and its date, 16 "lore" challenges referencing his school, work, old nicknames, first car and middle name (as prompts, not answers), and a dozen friends' nicknames. No surnames, no venue name or address, no real photos (live screenshots show only test nicknames and a placeholder image), no state or photo files ever committed. The server stores photos on a hosting volume, never in git. The auditor found that `docs/screenshots/live/host-party.png` shows a real 4-character party code; if the server is still running, that code opens the party's public view and photo list through the unauthenticated endpoint described in `APPLICATION_SECURITY_REVIEW.md` APP-01.
 - Accessibility: public, current and historical. Event date has passed.
 - Severity: LOW. Confidence: High.
 - Action: optional. Replace real nicknames in fixtures with generic ones before further promotion; ensure the hosted data directory (selfies, "cellar" photos) is deleted as the privacy page promises.
@@ -72,7 +72,7 @@ None of this is a direct identity leak, but together it narrows the owner's iden
 - Content: names, roles and biographies of 10 executives of a real Australian advisory firm (public on the firm's own site, per the repository) plus one person described as "Director of AI" who is not on the firm's published team page, with his photo. They are framed as the actual proposed delivery team and owner of the product, not as characters in the repository's fictional project data (which is clearly labelled fictional).
 - Accessibility: repository private; deployment reachability not verified (no requests were sent).
 - Consequence: a web page presenting a firm's leadership as endorsing or owning a proposal they may not have approved; use of one person's photo beyond what the firm publishes. Reputational and misrepresentation exposure for the owner.
-- Severity: LOW as found; MEDIUM if the deployment is confirmed live and unprotected. Confidence: Medium.
+- Severity: MEDIUM under the engagement scale (potentially sensitive information with uncertain accessibility); LOW once the deployment is confirmed protected or taken down. Confidence: Medium.
 - Action: check the Vercel project; enable deployment protection or take it down until the firm consents; remove the eleventh person's photo unless agreed; keep the repository private.
 
 ### PI-06 — Real businesses' public contact details in site mock-ups
